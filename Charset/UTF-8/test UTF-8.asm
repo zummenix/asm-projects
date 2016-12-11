@@ -22,9 +22,9 @@ proc UTF8_TO_UTF16LE lpString,lpBuffer,nSizeBuffer,boolBOM
         mov     edi,[lpBuffer]
         mov     ecx,edi
         add     ecx,[nSizeBuffer]
-        sub     ecx,4                   ; Конец буфера данных
+        sub     ecx,4                   ; РљРѕРЅРµС† Р±СѓС„РµСЂР° РґР°РЅРЅС‹С…
 
-; Пропускаем сигнатуру UTF-8, если есть (0xEF,0xBB,0xBF)
+; РџСЂРѕРїСѓСЃРєР°РµРј СЃРёРіРЅР°С‚СѓСЂСѓ UTF-8, РµСЃР»Рё РµСЃС‚СЊ (0xEF,0xBB,0xBF)
         mov     eax,[esi]
         and     eax,0x00FFFFFF
         cmp     eax,0x00BFBBEF
@@ -32,7 +32,7 @@ proc UTF8_TO_UTF16LE lpString,lpBuffer,nSizeBuffer,boolBOM
         add     esi,3
     @@:
 
-; Добавляем сигнатуру UTF-16LE, если нужно (0xFF,0xFE)
+; Р”РѕР±Р°РІР»СЏРµРј СЃРёРіРЅР°С‚СѓСЂСѓ UTF-16LE, РµСЃР»Рё РЅСѓР¶РЅРѕ (0xFF,0xFE)
         mov     eax,0xFEFF
         cmp     [boolBOM],1
         je      .write_word
@@ -41,14 +41,14 @@ proc UTF8_TO_UTF16LE lpString,lpBuffer,nSizeBuffer,boolBOM
         xor     eax,eax
         lodsb
         test    eax,eax
-        je      .exit           ; Если конец строки
+        je      .exit           ; Р•СЃР»Рё РєРѕРЅРµС† СЃС‚СЂРѕРєРё
         test    eax,10000000b
-        jnz     @F              ; Если 7й бит установлен
+        jnz     @F              ; Р•СЃР»Рё 7Р№ Р±РёС‚ СѓСЃС‚Р°РЅРѕРІР»РµРЅ
 
   .write_word:
         stosw
         cmp     edi,ecx
-        jb      .next_byte      ; Если выход за пределы буфера не произошел
+        jb      .next_byte      ; Р•СЃР»Рё РІС‹С…РѕРґ Р·Р° РїСЂРµРґРµР»С‹ Р±СѓС„РµСЂР° РЅРµ РїСЂРѕРёР·РѕС€РµР»
         ; FALSE
         xor     eax,eax
         stosw
@@ -56,7 +56,7 @@ proc UTF8_TO_UTF16LE lpString,lpBuffer,nSizeBuffer,boolBOM
 
     @@:
         test    eax,00100000b
-        jnz     @F              ; Если 5й бит установлен
+        jnz     @F              ; Р•СЃР»Рё 5Р№ Р±РёС‚ СѓСЃС‚Р°РЅРѕРІР»РµРЅ
         and     eax,00111111b
         mov     edx,eax
         shl     edx,6
@@ -67,7 +67,7 @@ proc UTF8_TO_UTF16LE lpString,lpBuffer,nSizeBuffer,boolBOM
 
     @@:
         test    eax,00010000b
-        jnz     @F              ; Если 4й бит установлен
+        jnz     @F              ; Р•СЃР»Рё 4Р№ Р±РёС‚ СѓСЃС‚Р°РЅРѕРІР»РµРЅ
         and     eax,00011111b
         mov     edx,eax
         shl     edx,6
@@ -85,7 +85,7 @@ proc UTF8_TO_UTF16LE lpString,lpBuffer,nSizeBuffer,boolBOM
         xor     eax,eax
         stosw
         dec     eax
-        jmp     .finish         ; Встретились символы, не входящие в UTF16
+        jmp     .finish         ; Р’СЃС‚СЂРµС‚РёР»РёСЃСЊ СЃРёРјРІРѕР»С‹, РЅРµ РІС…РѕРґСЏС‰РёРµ РІ UTF16
 
   .exit:
         stosw
